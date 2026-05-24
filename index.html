@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Digital Generator</title>
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#123fa5" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Invoice RF" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <style>
+    :root {
+      --primary-blue: #123fa5;
+      --dark-blue: #0b2f86;
+      --yellow: #fbb900;
+      --text-dark: #172033;
+      --border-soft: #d9e2ff;
+      --invoice-text-color: #153b97;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #eef3ff, #ffffff);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    .page-wrapper {
+      max-width: 1450px;
+      margin: 0 auto;
+      padding: 28px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      color: var(--dark-blue);
+      font-size: clamp(26px, 3vw, 40px);
+    }
+
+    .header p {
+      margin: 0;
+      color: #53617c;
+      font-size: 15px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 410px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .form-card {
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 18px 45px rgba(14, 45, 120, 0.12);
+      border: 1px solid rgba(18, 63, 165, 0.08);
+      position: sticky;
+      top: 20px;
+    }
+
+    .form-card h2 {
+      margin: 0 0 20px;
+      color: var(--dark-blue);
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #233357;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 48px;
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      padding: 0 15px;
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s ease;
+      background: #fbfcff;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 4px rgba(18, 63, 165, 0.12);
+      background: #ffffff;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    button {
+      height: 52px;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .btn-download {
+      background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+      color: white;
+      box-shadow: 0 12px 25px rgba(18, 63, 165, 0.25);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      color: white;
+      box-shadow: 0 12px 25px rgba(37, 211, 102, 0.25);
+    }
+
+    .btn-install {
+      background: linear-gradient(135deg, #fbb900, #f59e0b);
+      color: #332200;
+      box-shadow: 0 12px 25px rgba(251, 185, 0, 0.22);
+      display: none;
+    }
+
+    .btn-reset {
+      background: #fff4cf;
+      color: #8d6500;
+      border: 1px solid #ffe08a;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .note {
+      margin-top: 18px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #5b6883;
+      background: #f5f8ff;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .preview-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 45px rgba(14, 45, 120, 0.12);
+      border: 1px solid rgba(18, 63, 165, 0.08);
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .preview-header h2 {
+      margin: 0;
+      font-size: 24px;
+      color: var(--dark-blue);
+    }
+
+    .preview-badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--primary-blue);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .invoice-scroll {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .invoice-stage {
+      position: relative;
+      width: 100%;
+      max-width: 760px;
+      aspect-ratio: 3 / 4;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #ffffff;
+      container-type: inline-size;
+
+      --value-left: 49.8%;
+      --value-width: 37.2%;
+      --time-top: 37.15%;
+      --product-top: 45.55%;
+      --number-top: 53.95%;
+      --price-top: 62.25%;
+      --serial-left: 20.5%;
+      --serial-width: 59%;
+      --serial-top: 77.65%;
+    }
+
+    .invoice-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .overlay-text {
+      position: absolute;
+      left: var(--value-left);
+      width: var(--value-width);
+      transform: translateY(-50%);
+      color: var(--invoice-text-color);
+      font-weight: 700;
+      font-size: clamp(8px, 1.75cqw, 22px);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      z-index: 2;
+    }
+
+    .overlay-time { top: var(--time-top); }
+    .overlay-product { top: var(--product-top); }
+    .overlay-number { top: var(--number-top); }
+    .overlay-price { top: var(--price-top); }
+
+    .overlay-serial {
+      position: absolute;
+      left: var(--serial-left);
+      width: var(--serial-width);
+      top: var(--serial-top);
+      transform: translateY(-50%);
+      z-index: 2;
+      text-align: center;
+      color: var(--invoice-text-color);
+      font-size: clamp(8px, 1.9cqw, 24px);
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #5b6883;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    @media (display-mode: standalone) {
+      .header p::after {
+        content: " • Mode aplikasi aktif";
+        color: #25a05a;
+        font-weight: 700;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+      .form-card { position: static; }
+      .invoice-stage { max-width: 760px; }
+    }
+
+    @media (max-width: 640px) {
+      .page-wrapper { padding: 18px 12px; }
+      .form-card, .preview-card { padding: 16px; border-radius: 18px; }
+      .header h1 { font-size: 25px; }
+      .form-card h2, .preview-header h2 { font-size: 20px; }
+      .preview-header { align-items: flex-start; flex-direction: column; }
+      button { height: 50px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-wrapper">
+    <section class="header">
+      <h1>Invoice / Struk Digital Generator</h1>
+      <p>Isi data transaksi, lihat preview real-time, lalu download atau kirim ke WhatsApp.</p>
+    </section>
+
+    <section class="layout">
+      <aside class="form-card">
+        <h2>Isi Data Invoice</h2>
+
+        <div class="form-group">
+          <label for="purchaseTime">Waktu Pembelian</label>
+          <input type="datetime-local" id="purchaseTime" />
+        </div>
+
+        <div class="form-group">
+          <label for="productName">Nama Produk</label>
+          <input type="text" id="productName" placeholder="Contoh: Voucher Game 100K" />
+        </div>
+
+        <div class="form-group">
+          <label for="destinationNumber">Nomor Tujuan</label>
+          <input type="text" id="destinationNumber" placeholder="Contoh: 0812-3456-7890" />
+        </div>
+
+        <div class="form-group">
+          <label for="price">Harga</label>
+          <input type="text" id="price" inputmode="numeric" placeholder="Contoh: Rp25.000" />
+        </div>
+
+        <div class="form-group">
+          <label for="serialNumber">Serial Number</label>
+          <input type="text" id="serialNumber" placeholder="Contoh: RF-2026-A91XZ7" />
+        </div>
+
+        <div class="button-group">
+          <button class="btn-download" id="downloadBtn">Download Invoice PNG</button>
+          <button class="btn-whatsapp" id="shareWhatsappBtn">Kirim ke WhatsApp</button>
+          <button class="btn-install" id="installBtn">Install Aplikasi</button>
+          <button class="btn-reset" id="resetBtn">Reset Form</button>
+        </div>
+
+        <div class="note">
+          Ini sudah dibuat sebagai <strong>PWA</strong>, jadi bisa di-install seperti aplikasi dari browser HP.
+          Waktu pembelian otomatis mengikuti waktu pembuatan struk, tetapi tetap bisa diedit manual.
+        </div>
+
+        <div class="app-status" id="appStatus"></div>
+      </aside>
+
+      <section class="preview-card">
+        <div class="preview-header">
+          <h2>Preview Invoice</h2>
+          <span class="preview-badge">Real-time Preview</span>
+        </div>
+
+        <div class="invoice-scroll">
+          <div class="invoice-stage" id="invoiceCapture">
+            <img src="background-invoice.png" alt="Background Invoice" class="invoice-bg" id="invoiceBackground" />
+
+            <div class="overlay-text overlay-time" id="previewTime"></div>
+            <div class="overlay-text overlay-product" id="previewProduct"></div>
+            <div class="overlay-text overlay-number" id="previewNumber"></div>
+            <div class="overlay-text overlay-price" id="previewPrice"></div>
+            <div class="overlay-serial" id="previewSerial"></div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const defaultData = {
+      productName: "Voucher Game 100K",
+      destinationNumber: "0812-3456-7890",
+      price: "25000",
+      serialNumber: "RF-2026-A91XZ7"
+    };
+
+    const exportSettings = {
+      textColor: "#153b97",
+      fontFamily: "Arial, Helvetica, sans-serif",
+      valueLeft: 0.498,
+      valueWidth: 0.372,
+      timeTop: 0.3715,
+      productTop: 0.4555,
+      numberTop: 0.5395,
+      priceTop: 0.6225,
+      serialLeft: 0.205,
+      serialWidth: 0.59,
+      serialTop: 0.7765
+    };
+
+    const purchaseTimeInput = document.getElementById("purchaseTime");
+    const productNameInput = document.getElementById("productName");
+    const destinationNumberInput = document.getElementById("destinationNumber");
+    const priceInput = document.getElementById("price");
+    const serialNumberInput = document.getElementById("serialNumber");
+
+    const previewTime = document.getElementById("previewTime");
+    const previewProduct = document.getElementById("previewProduct");
+    const previewNumber = document.getElementById("previewNumber");
+    const previewPrice = document.getElementById("previewPrice");
+    const previewSerial = document.getElementById("previewSerial");
+
+    const resetBtn = document.getElementById("resetBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const shareWhatsappBtn = document.getElementById("shareWhatsappBtn");
+    const installBtn = document.getElementById("installBtn");
+    const appStatus = document.getElementById("appStatus");
+    const invoiceBackground = document.getElementById("invoiceBackground");
+
+    let isPurchaseTimeManuallyEdited = false;
+    let deferredInstallPrompt = null;
+
+    function getCurrentLocalDateTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    function formatRupiah(value) {
+      const digits = String(value).replace(/\D/g, "");
+      if (!digits) return "";
+      return "Rp" + Number(digits).toLocaleString("id-ID");
+    }
+
+    function formatDateTimeForInvoice(value) {
+      if (!value) return "-";
+      const [datePart, timePart] = value.split("T");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const formattedDate = new Intl.DateTimeFormat("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      }).format(new Date(year, month - 1, day));
+      return `${formattedDate}, ${timePart} WIB`;
+    }
+
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "produk";
+    }
+
+    function updatePreview() {
+      previewTime.textContent = formatDateTimeForInvoice(purchaseTimeInput.value);
+      previewProduct.textContent = productNameInput.value || "-";
+      previewNumber.textContent = destinationNumberInput.value || "-";
+      previewPrice.textContent = priceInput.value || "-";
+      previewSerial.textContent = serialNumberInput.value || "-";
+    }
+
+    function setAutomaticPurchaseTime() {
+      purchaseTimeInput.value = getCurrentLocalDateTime();
+    }
+
+    function refreshAutomaticPurchaseTimeIfNeeded() {
+      if (!isPurchaseTimeManuallyEdited) {
+        setAutomaticPurchaseTime();
+        updatePreview();
+      }
+    }
+
+    function loadDefaultData() {
+      isPurchaseTimeManuallyEdited = false;
+      setAutomaticPurchaseTime();
+      productNameInput.value = defaultData.productName;
+      destinationNumberInput.value = defaultData.destinationNumber;
+      priceInput.value = formatRupiah(defaultData.price);
+      serialNumberInput.value = defaultData.serialNumber;
+      updatePreview();
+    }
+
+    function waitForImage(img) {
+      return new Promise((resolve) => {
+        if (img.complete && img.naturalWidth > 0) resolve();
+        else {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        }
+      });
+    }
+
+    function fitText(ctx, text, maxWidth, fontSize, fontWeight = "700") {
+      let size = fontSize;
+      while (size > 8) {
+        ctx.font = `${fontWeight} ${size}px ${exportSettings.fontFamily}`;
+        if (ctx.measureText(text).width <= maxWidth) break;
+        size -= 1;
+      }
+      return size;
+    }
+
+    function drawExportText(ctx, text, x, y, maxWidth, fontSize, align = "left") {
+      ctx.save();
+      ctx.fillStyle = exportSettings.textColor;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = align;
+      const fittedFontSize = fitText(ctx, text, maxWidth, fontSize);
+      ctx.font = `700 ${fittedFontSize}px ${exportSettings.fontFamily}`;
+      ctx.fillText(text, x, y, maxWidth);
+      ctx.restore();
+    }
+
+    async function createInvoiceCanvas() {
+      refreshAutomaticPurchaseTimeIfNeeded();
+      await waitForImage(invoiceBackground);
+
+      const bg = invoiceBackground;
+      const exportScale = 3;
+      const baseWidth = bg.naturalWidth || 1152;
+      const baseHeight = bg.naturalHeight || 1536;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = baseWidth * exportScale;
+      canvas.height = baseHeight * exportScale;
+
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+      const w = canvas.width;
+      const h = canvas.height;
+      const valueX = w * exportSettings.valueLeft;
+      const valueMaxWidth = w * exportSettings.valueWidth;
+      const normalFontSize = w * 0.0185;
+      const serialFontSize = w * 0.021;
+
+      drawExportText(ctx, formatDateTimeForInvoice(purchaseTimeInput.value), valueX, h * exportSettings.timeTop, valueMaxWidth, normalFontSize);
+      drawExportText(ctx, productNameInput.value || "-", valueX, h * exportSettings.productTop, valueMaxWidth, normalFontSize);
+      drawExportText(ctx, destinationNumberInput.value || "-", valueX, h * exportSettings.numberTop, valueMaxWidth, normalFontSize);
+      drawExportText(ctx, priceInput.value || "-", valueX, h * exportSettings.priceTop, valueMaxWidth, normalFontSize);
+      drawExportText(ctx, serialNumberInput.value || "-", w * (exportSettings.serialLeft + exportSettings.serialWidth / 2), h * exportSettings.serialTop, w * exportSettings.serialWidth, serialFontSize, "center");
+
+      return canvas;
+    }
+
+    async function createInvoiceFile() {
+      const canvas = await createInvoiceCanvas();
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
+      if (!blob) throw new Error("Gagal membuat file invoice PNG.");
+      const productSlug = slugify(productNameInput.value);
+      const fileName = `invoice-${productSlug}.png`;
+      return new File([blob], fileName, { type: "image/png" });
+    }
+
+    purchaseTimeInput.addEventListener("input", function () {
+      isPurchaseTimeManuallyEdited = true;
+      updatePreview();
+    });
+
+    productNameInput.addEventListener("input", updatePreview);
+    destinationNumberInput.addEventListener("input", updatePreview);
+    serialNumberInput.addEventListener("input", updatePreview);
+
+    priceInput.addEventListener("input", function () {
+      const rawDigits = this.value.replace(/\D/g, "");
+      this.value = formatRupiah(rawDigits);
+      updatePreview();
+    });
+
+    resetBtn.addEventListener("click", loadDefaultData);
+
+    downloadBtn.addEventListener("click", async function () {
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = "Memproses PNG...";
+      try {
+        const canvas = await createInvoiceCanvas();
+        const imageURL = canvas.toDataURL("image/png");
+        const productSlug = slugify(productNameInput.value);
+        const fileName = `invoice-${productSlug}.png`;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = imageURL;
+        downloadLink.download = fileName;
+        downloadLink.click();
+      } catch (error) {
+        console.error(error);
+        alert("Gagal membuat gambar invoice.");
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = "Download Invoice PNG";
+      }
+    });
+
+    shareWhatsappBtn.addEventListener("click", async function () {
+      shareWhatsappBtn.disabled = true;
+      shareWhatsappBtn.textContent = "Menyiapkan Invoice...";
+      try {
+        const invoiceFile = await createInvoiceFile();
+        const shareData = {
+          title: "Invoice Digital",
+          text: `Invoice untuk ${productNameInput.value || "produk"}`,
+          files: [invoiceFile]
+        };
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [invoiceFile] })) {
+          await navigator.share(shareData);
+        } else {
+          const imageURL = URL.createObjectURL(invoiceFile);
+          const downloadLink = document.createElement("a");
+          downloadLink.href = imageURL;
+          downloadLink.download = invoiceFile.name;
+          downloadLink.click();
+          setTimeout(() => URL.revokeObjectURL(imageURL), 1000);
+          const whatsappMessage = encodeURIComponent(`Invoice ${productNameInput.value || "produk"} sudah dibuat.`);
+          window.open(`https://wa.me/?text=${whatsappMessage}`, "_blank");
+          alert("Invoice sudah diunduh. WhatsApp juga sudah dibuka, silakan lampirkan gambar invoice yang baru terunduh.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Gagal menyiapkan invoice untuk WhatsApp.");
+      } finally {
+        shareWhatsappBtn.disabled = false;
+        shareWhatsappBtn.textContent = "Kirim ke WhatsApp";
+      }
+    });
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installBtn.style.display = "block";
+      appStatus.textContent = "Aplikasi siap di-install.";
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) {
+        appStatus.textContent = "Buka menu browser lalu pilih Tambahkan ke layar utama.";
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      const result = await deferredInstallPrompt.userChoice;
+      appStatus.textContent = result.outcome === "accepted" ? "Aplikasi berhasil di-install." : "Install aplikasi dibatalkan.";
+      deferredInstallPrompt = null;
+      installBtn.style.display = "none";
+    });
+
+    window.addEventListener("appinstalled", () => {
+      appStatus.textContent = "Aplikasi sudah terpasang di perangkat.";
+      installBtn.style.display = "none";
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch((error) => {
+          console.warn("Service worker gagal aktif:", error);
+        });
+      });
+    }
+
+    loadDefaultData();
+  </script>
+</body>
+</html>
