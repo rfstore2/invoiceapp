@@ -514,7 +514,7 @@
       while (size > 11) {
         ctx.font = `${fontWeight} ${size}px ${exportSettings.fontFamily}`;
         if (ctx.measureText(text).width <= maxWidth) break;
-        size -= 1;
+        size -= 0.5;
       }
       return size;
      }
@@ -552,8 +552,8 @@
       const h = canvas.height;
       const valueX = w * exportSettings.valueLeft;
       const valueMaxWidth = w * exportSettings.valueWidth;
-      const normalFontSize = w * 0.02;
-      const serialFontSize = w * 0.02;
+      const normalFontSize = w * 0.03;
+      const serialFontSize = w * 0.03;
 
       drawExportText(ctx, formatDateTimeForInvoice(purchaseTimeInput.value), valueX, h * exportSettings.timeTop, valueMaxWidth, normalFontSize);
       drawExportText(ctx, productNameInput.value || "-", valueX, h * exportSettings.productTop, valueMaxWidth, normalFontSize);
