@@ -552,8 +552,8 @@
       const h = canvas.height;
       const valueX = w * exportSettings.valueLeft;
       const valueMaxWidth = w * exportSettings.valueWidth;
-      const normalFontSize = w * 0.02;
-      const serialFontSize = w * 0.02;
+      const normalFontSize = w * 0.024;
+      const serialFontSize = w * 0.024;
 
       drawExportText(ctx, formatDateTimeForInvoice(purchaseTimeInput.value), valueX, h * exportSettings.timeTop, valueMaxWidth, normalFontSize);
       drawExportText(ctx, productNameInput.value || "-", valueX, h * exportSettings.productTop, valueMaxWidth, normalFontSize);
