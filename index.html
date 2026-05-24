@@ -511,21 +511,20 @@
 
     function fitText(ctx, text, maxWidth, fontSize, fontWeight = "700") {
       let size = fontSize;
-      while (size > 8) {
+      while (size > 11) {
         ctx.font = `${fontWeight} ${size}px ${exportSettings.fontFamily}`;
         if (ctx.measureText(text).width <= maxWidth) break;
         size -= 1;
       }
       return size;
-    }
-
+     }
     function drawExportText(ctx, text, x, y, maxWidth, fontSize, align = "left") {
       ctx.save();
       ctx.fillStyle = exportSettings.textColor;
       ctx.textBaseline = "middle";
       ctx.textAlign = align;
       const fittedFontSize = fitText(ctx, text, maxWidth, fontSize);
-      ctx.font = `700 ${fontSize}px ${exportSettings.fontFamily}`;
+      ctx.font = `700 ${fittedFontSize}px ${exportSettings.fontFamily}`;
       ctx.fillText(text, x, y, maxWidth);
       ctx.restore();
     }
@@ -553,8 +552,8 @@
       const h = canvas.height;
       const valueX = w * exportSettings.valueLeft;
       const valueMaxWidth = w * exportSettings.valueWidth;
-      const normalFontSize = w * 0.019;
-      const serialFontSize = w * 0.019;
+      const normalFontSize = w * 0.02;
+      const serialFontSize = w * 0.02;
 
       drawExportText(ctx, formatDateTimeForInvoice(purchaseTimeInput.value), valueX, h * exportSettings.timeTop, valueMaxWidth, normalFontSize);
       drawExportText(ctx, productNameInput.value || "-", valueX, h * exportSettings.productTop, valueMaxWidth, normalFontSize);
