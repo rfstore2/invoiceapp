@@ -250,7 +250,7 @@
       transform: translateY(-50%);
       color: var(--invoice-text-color);
       font-weight: 700;
-      font-size: clamp(8px, 1.75cqw, 22px);
+      font-size: clamp(11px, 1.9cqw, 22px);
       line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
@@ -272,7 +272,7 @@
       z-index: 2;
       text-align: center;
       color: var(--invoice-text-color);
-      font-size: clamp(8px, 1.9cqw, 24px);
+      font-size: clamp(11px, 1.9cqw, 24px);
       font-weight: 700;
       letter-spacing: 0.8px;
       white-space: nowrap;
@@ -387,24 +387,24 @@
 
   <script>
     const defaultData = {
-      productName: "Voucher Game 100K",
-      destinationNumber: "0812-3456-7890",
-      price: "25000",
-      serialNumber: "RF-2026-A91XZ7"
+      productName: "",
+      destinationNumber: "",
+      price: "",
+      serialNumber: ""
     };
 
     const exportSettings = {
-      textColor: "#153b97",
+      textColor: "#000",
       fontFamily: "Arial, Helvetica, sans-serif",
-      valueLeft: 0.498,
+      valueLeft: 0.5055,
       valueWidth: 0.372,
-      timeTop: 0.3715,
-      productTop: 0.4555,
-      numberTop: 0.5395,
-      priceTop: 0.6225,
+      timeTop: 0.3445,
+      productTop: 0.4440,
+      numberTop: 0.5405,
+      priceTop: 0.6365,
       serialLeft: 0.205,
       serialWidth: 0.59,
-      serialTop: 0.7765
+      serialTop: 0.7960
     };
 
     const purchaseTimeInput = document.getElementById("purchaseTime");
