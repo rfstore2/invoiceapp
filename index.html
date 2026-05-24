@@ -525,7 +525,7 @@
       ctx.textBaseline = "middle";
       ctx.textAlign = align;
       const fittedFontSize = fitText(ctx, text, maxWidth, fontSize);
-      ctx.font = `700 ${fittedFontSize}px ${exportSettings.fontFamily}`;
+      ctx.font = `700 ${fontSize}px ${exportSettings.fontFamily}`;
       ctx.fillText(text, x, y, maxWidth);
       ctx.restore();
     }
